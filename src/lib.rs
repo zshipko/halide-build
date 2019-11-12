@@ -4,6 +4,7 @@ use std::io;
 use std::path::PathBuf;
 use std::process::Command;
 
+#[derive(Debug)]
 pub struct Build<'a> {
     pub halide_path: PathBuf,
     pub src: Vec<PathBuf>,
@@ -90,9 +91,11 @@ impl<'a> Build<'a> {
             .env("LD_LIBRARY_PATH", self.halide_path.join("lib"))
             .status()
             .map(|status| status.success());
+
         if !self.keep {
-            remove_file(&self.output)?;
+            let _ = remove_file(&self.output);
         }
+
         res
     }
 }
