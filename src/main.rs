@@ -1,6 +1,4 @@
-mod compile;
-
-use self::compile::*;
+use halide_build::*;
 
 use clap::{App, Arg, SubCommand};
 

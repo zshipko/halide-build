@@ -18,6 +18,24 @@ pub struct Build<'a> {
 }
 
 impl<'a> Build<'a> {
+    pub fn new<P: AsRef<std::path::Path>, Q: AsRef<std::path::PathBuf>>(
+        halide_path: P,
+        output: Q,
+    ) -> Build<'a> {
+        Build {
+            halide_path: halide_path.as_ref().to_path_buf(),
+            src: vec![],
+            output: output.as_ref().to_path_buf(),
+            cxx: None,
+            cxxflags: None,
+            ldflags: None,
+            build_args: vec![],
+            run_args: vec![],
+            keep: false,
+            generator: false,
+        }
+    }
+
     pub fn build(&self) -> io::Result<bool> {
         let cxx_default = env::var("CXX").unwrap_or("c++".to_string());
         let mut cmd = Command::new(self.cxx.clone().unwrap_or(cxx_default.as_str()));
@@ -79,7 +97,7 @@ impl<'a> Build<'a> {
     }
 }
 
-/*pub fn run<P: AsRef<Path>, Q: AsRef<Path>>(
+pub fn run<P: AsRef<std::path::Path>, Q: AsRef<std::path::Path>>(
     halide_path: P,
     path: Q,
     run_args: Vec<&str>,
@@ -100,7 +118,7 @@ impl<'a> Build<'a> {
 
     build.build()?;
     build.run()
-}*/
+}
 
 pub struct Source {
     pub halide_path: PathBuf,
