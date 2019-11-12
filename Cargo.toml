@@ -4,5 +4,13 @@ version = "0.1.0"
 authors = ["Zach Shipko <zachshipko@gmail.com>"]
 edition = "2018"
 
+[[bin]]
+name = "halide"
+required-features = ["bin"]
+
 [dependencies]
-clap = "2"
+clap = {version = "2", optional = true}
+
+[features]
+default = []
+bin = ["clap"]
