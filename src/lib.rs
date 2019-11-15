@@ -29,6 +29,22 @@ pub fn link<P: AsRef<std::path::Path>>(filename: P) {
     link_lib(filename.to_str(), tmp);
 }
 
+pub fn compile_shared_library(
+    compiler: Option<&str>,
+    output: &str,
+    args: &[&str],
+) -> Result<bool, std::io::Error> {
+    let cxx = std::env::var("CXX").unwrap_or("c++".to_owned());
+    let mut cmd = Command::new(compiler.unwrap_or(&cxx));
+    let res = cmd
+        .arg("-shared")
+        .arg("-o")
+        .arg(output)
+        .args(args)
+        .status()?;
+    Ok(res.success())
+}
+
 #[derive(Debug)]
 pub struct Build<'a> {
     pub halide_path: PathBuf,
