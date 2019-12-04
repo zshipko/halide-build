@@ -3,6 +3,14 @@ name = "halide-build"
 version = "0.1.0"
 authors = ["Zach Shipko <zachshipko@gmail.com>"]
 edition = "2018"
+license = "ISC"
+repository = "https://github.com/zshipko/halide-build"
+documentation = "https://docs.rs/halide-build"
+readme = "README.md"
+description = "A library/utility for building Halide kernels"
+
+[package.metadata.docs.rs]
+all-features = true
 
 [[bin]]
 name = "halide"
