@@ -1,3 +1,5 @@
+//! halide-build is used to compile [Halide](https://github.com/halide/halide) kernels
+
 use std::env;
 use std::fs::remove_file;
 use std::io;
@@ -7,6 +9,7 @@ use std::process::Command;
 static CARGO_LINK_SEARCH: &'static str = "cargo:rustc-link-search=native=";
 static CARGO_LINK_LIB: &'static str = "cargo:rustc-link-lib=";
 
+/// Link a library, specified by path and name
 pub fn link_lib(path: Option<&str>, name: &str) {
     if let Some(path) = path {
         println!("{}{}", CARGO_LINK_SEARCH, path);
@@ -15,6 +18,7 @@ pub fn link_lib(path: Option<&str>, name: &str) {
     println!("{}{}", CARGO_LINK_LIB, name);
 }
 
+/// Link a library, specified by filename
 pub fn link<P: AsRef<std::path::Path>>(filename: P) {
     let mut filename = filename.as_ref().to_path_buf();
     let name = filename.file_stem().expect("Invalid filename");
@@ -29,6 +33,7 @@ pub fn link<P: AsRef<std::path::Path>>(filename: P) {
     link_lib(filename.to_str(), tmp);
 }
 
+/// Compile a shared library using the C++ compiler
 pub fn compile_shared_library(
     compiler: Option<&str>,
     output: &str,
@@ -45,21 +50,42 @@ pub fn compile_shared_library(
     Ok(res.success())
 }
 
+/// Build stores the required context for building a Halide kernel
 #[derive(Debug)]
 pub struct Build<'a> {
+    /// Path to halide source
     pub halide_path: PathBuf,
+
+    /// Input files
     pub src: Vec<PathBuf>,
+
+    /// Output file
     pub output: PathBuf,
+
+    /// C++ compiler
     pub cxx: Option<&'a str>,
+
+    /// C++ compile time flags
     pub cxxflags: Option<&'a str>,
+
+    /// C++ link time flags
     pub ldflags: Option<&'a str>,
+
+    /// Extra arguments to build step
     pub build_args: Vec<&'a str>,
+
+    /// Extra arguments to run step
     pub run_args: Vec<&'a str>,
+
+    /// Keep executable when finished running
     pub keep: bool,
+
+    /// Include Halide generator header
     pub generator: bool,
 }
 
 impl<'a> Build<'a> {
+    /// Create a new build with the given halide path and output
     pub fn new<P: AsRef<std::path::Path>, Q: AsRef<std::path::PathBuf>>(
         halide_path: P,
         output: Q,
@@ -78,6 +104,7 @@ impl<'a> Build<'a> {
         }
     }
 
+    /// Execute the build step
     pub fn build(&self) -> io::Result<bool> {
         let cxx_default = env::var("CXX").unwrap_or("c++".to_string());
         let mut cmd = Command::new(self.cxx.clone().unwrap_or(cxx_default.as_str()));
@@ -122,6 +149,7 @@ impl<'a> Build<'a> {
         cmd.status().map(|status| status.success())
     }
 
+    /// Execute the run step
     pub fn run(&self) -> io::Result<bool> {
         if !self.output.exists() {
             return Ok(false);
@@ -141,6 +169,7 @@ impl<'a> Build<'a> {
     }
 }
 
+/// Build and run a Halide kernel
 pub fn run<P: AsRef<std::path::Path>, Q: AsRef<std::path::Path>>(
     halide_path: P,
     path: Q,
@@ -164,6 +193,7 @@ pub fn run<P: AsRef<std::path::Path>, Q: AsRef<std::path::Path>>(
     build.run()
 }
 
+/// Source is used to maintain the Halide source directory
 pub struct Source {
     pub halide_path: PathBuf,
     pub repo: String,
@@ -173,6 +203,7 @@ pub struct Source {
 }
 
 impl Source {
+    /// Download Halide source for the first time
     pub fn download(&self) -> io::Result<bool> {
         Command::new("git")
             .arg("clone")
@@ -183,6 +214,7 @@ impl Source {
             .map(|status| status.success())
     }
 
+    /// Update Halide source
     pub fn update(&self) -> io::Result<bool> {
         Command::new("git")
             .current_dir(&self.halide_path)
@@ -193,6 +225,7 @@ impl Source {
             .map(|status| status.success())
     }
 
+    /// Build Halide source
     pub fn build(&self) -> io::Result<bool> {
         Command::new(&self.make)
             .current_dir(&self.halide_path)
