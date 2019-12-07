@@ -3,6 +3,7 @@ use halide_build::*;
 use clap::{App, Arg, SubCommand};
 
 use std::env;
+use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::exit;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -68,14 +69,14 @@ fn build_command<'a, 'b>() -> App<'a, 'b> {
         )
         .arg(
             Arg::with_name("cxxflags")
-                .long("cxxflags")
                 .env("CXXFLAGS")
+                .long("cxxflags")
                 .help("Set c++ compile flags"),
         )
         .arg(
             Arg::with_name("ldflags")
-                .long("ldflags")
                 .env("LDFLAGS")
+                .long("ldflags")
                 .help("Set c++ link flags"),
         )
         .arg(
@@ -116,14 +117,14 @@ fn run_command<'a, 'b>() -> App<'a, 'b> {
         )
         .arg(
             Arg::with_name("cxxflags")
-                .long("cxxflags")
                 .env("CXXFLAGS")
+                .long("cxxflags")
                 .help("Set c++ compile flags"),
         )
         .arg(
             Arg::with_name("ldflags")
-                .long("ldflags")
                 .env("LDFLAGS")
+                .long("ldflags")
                 .help("Set c++ link flags"),
         )
         .arg(
@@ -153,6 +154,12 @@ fn run_command<'a, 'b>() -> App<'a, 'b> {
         )
 }
 
+fn new_command<'a, 'b>() -> App<'a, 'b> {
+    SubCommand::with_name("new")
+        .about("Create new Halide genertor")
+        .arg(Arg::with_name("path"))
+}
+
 fn main() {
     let default_halide_path = relative_to_home("halide");
     let mut app = App::new("halide")
@@ -172,7 +179,8 @@ fn main() {
         )
         .subcommand(src_command())
         .subcommand(build_command())
-        .subcommand(run_command());
+        .subcommand(run_command())
+        .subcommand(new_command());
 
     let mut help = Vec::new();
     let _ = app.write_long_help(&mut help);
@@ -310,6 +318,31 @@ fn main() {
         {
             log!("Failure while running {:?}", build.output);
             exit(1)
+        }
+    } else if let Some(b) = matches.subcommand_matches("new") {
+        let dest = b.value_of("path").unwrap();
+        let mut f = std::fs::File::create(dest).expect("Unable to open output file");
+        let s = "
+#include <Halide.h>
+using namespace Halide;
+
+class Filter: public Generator<Filter> {
+public:
+    Var x, y, c;
+    Input<Buffer<float>> input{\"input\", 3};
+    Output<Buffer<float>> output{\"output\", 3};
+    void generate(){
+
+    }
+
+    void schedule(){
+
+    }
+};
+
+HALIDE_REGISTER_GENERATOR(Filter, filter);";
+        if let Err(e) = f.write(s.as_bytes()) {
+            log!("Unable to write new file: {:?}", e);
         }
     } else {
         eprintln!("{}", String::from_utf8_lossy(help.as_ref()));
