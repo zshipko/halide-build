@@ -103,6 +103,12 @@ fn build_command<'a, 'b>() -> App<'a, 'b> {
                 .short("g")
                 .help("Link with GenGen.cpp"),
         )
+        .arg(
+            Arg::with_name("shared")
+                .long("shared")
+                .takes_value(true)
+                .help("Compile shared library"),
+        )
 }
 
 fn run_command<'a, 'b>() -> App<'a, 'b> {
@@ -151,6 +157,12 @@ fn run_command<'a, 'b>() -> App<'a, 'b> {
                 .raw(true)
                 .takes_value(true)
                 .help("Arguments to executable"),
+        )
+        .arg(
+            Arg::with_name("shared")
+                .long("shared")
+                .takes_value(true)
+                .help("Compile shared library"),
         )
 }
 
@@ -276,6 +288,17 @@ fn main() {
             log!("Unable to build {:?}", build.output);
             exit(1)
         }
+
+        if let Some(x) = b.value_of("shared") {
+            let f = std::path::PathBuf::from(x);
+            let f =
+                f.with_file_name(String::from("lib") + f.file_name().unwrap().to_str().unwrap());
+            let f = f.with_extension("so");
+
+            log!("Building shared library: {} -> {}", x, f.display());
+            compile_shared_library(b.value_of("cxx"), f.to_str().unwrap(), &[x])
+                .expect("Unable to compile shared library");
+        }
     } else if let Some(b) = matches.subcommand_matches("run") {
         let start = SystemTime::now();
         let ts = start.duration_since(UNIX_EPOCH).unwrap();
@@ -318,6 +341,17 @@ fn main() {
         {
             log!("Failure while running {:?}", build.output);
             exit(1)
+        }
+
+        if let Some(x) = b.value_of("shared") {
+            let f = std::path::PathBuf::from(x);
+            let f =
+                f.with_file_name(String::from("lib") + f.file_name().unwrap().to_str().unwrap());
+            let f = f.with_extension("so");
+
+            log!("Building shared library: {} -> {}", x, f.display());
+            compile_shared_library(b.value_of("cxx"), f.to_str().unwrap(), &[x])
+                .expect("Unable to compile shared library");
         }
     } else if let Some(b) = matches.subcommand_matches("new") {
         let dest = b.value_of("path").unwrap();
