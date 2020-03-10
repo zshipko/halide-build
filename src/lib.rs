@@ -128,6 +128,8 @@ impl<'a> Build<'a> {
             cmd.args(&self.build_args);
         }
 
+        let tinfo = std::env::var("TERMINFO").unwrap_or_else(|_| "-lncurses".to_string());
+
         cmd.args(&self.src)
             .args(&["-o", &self.output.to_string_lossy()])
             .args(&[
@@ -137,10 +139,12 @@ impl<'a> Build<'a> {
                 "-lpng",
                 "-ljpeg",
                 "-lpthread",
-                "-ltinfo",
+                &tinfo,
                 "-ldl",
                 "-lz",
             ]);
+
+        println!("ARGS: {:?}", cmd);
 
         if let Some(flags) = &self.ldflags {
             cmd.args(flags.split(" "));
