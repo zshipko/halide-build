@@ -144,8 +144,6 @@ impl<'a> Build<'a> {
                 "-lz",
             ]);
 
-        println!("ARGS: {:?}", cmd);
-
         if let Some(flags) = &self.ldflags {
             cmd.args(flags.split(" "));
         }
