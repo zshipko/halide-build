@@ -29,6 +29,14 @@ pub fn link<P: AsRef<std::path::Path>>(filename: P) {
         tmp = &s[3..]
     }
 
+    if s.ends_with(".a") {
+        tmp = &tmp[..tmp.len() - 2];
+    } else if s.ends_with(".so") {
+        tmp = &tmp[..tmp.len() - 3];
+    } else if s.ends_with(".dylib") {
+        tmp = &tmp[..tmp.len() - 6];
+    }
+
     filename.pop();
     link_lib(filename.to_str(), tmp);
 }
