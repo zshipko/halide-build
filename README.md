@@ -1,5 +1,9 @@
 # halide-build
 
+<a href="https://crates.io/crates/halide-build">
+    <img src="https://img.shields.io/crates/v/halide-build.svg">
+</a>
+
 A build tool for [Halide](https://github.com/halide/halide) filters.
 
 It can be used from within Rust code or from the command-line.
