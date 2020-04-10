@@ -49,6 +49,8 @@ pub fn compile_shared_library(
 ) -> Result<bool, std::io::Error> {
     let cxx = std::env::var("CXX").unwrap_or("c++".to_owned());
     let mut cmd = Command::new(compiler.unwrap_or(&cxx));
+
+    cmd.arg("-std=c++11");
     let res = cmd
         .arg("-shared")
         .arg("-o")
