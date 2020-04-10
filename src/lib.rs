@@ -117,6 +117,7 @@ impl<'a> Build<'a> {
         let cxx_default = env::var("CXX").unwrap_or("c++".to_string());
         let mut cmd = Command::new(self.cxx.clone().unwrap_or(cxx_default.as_str()));
 
+        cmd.arg("-std=c++11");
         cmd.args(&["-I", &self.halide_path.join("include").to_string_lossy()])
             .args(&["-I", &self.halide_path.join("tools").to_string_lossy()]);
 
