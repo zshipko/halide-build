@@ -169,7 +169,7 @@ fn run_command<'a, 'b>() -> App<'a, 'b> {
 fn new_command<'a, 'b>() -> App<'a, 'b> {
     SubCommand::with_name("new")
         .about("Create new Halide genertor")
-        .arg(Arg::with_name("path"))
+        .arg(Arg::with_name("path").required(true))
 }
 
 fn main() {
