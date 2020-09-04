@@ -96,7 +96,7 @@ pub struct Build<'a> {
 
 impl<'a> Build<'a> {
     /// Create a new build with the given halide path and output
-    pub fn new<P: AsRef<std::path::Path>, Q: AsRef<std::path::PathBuf>>(
+    pub fn new<P: AsRef<std::path::Path>, Q: AsRef<std::path::Path>>(
         halide_path: P,
         output: Q,
     ) -> Build<'a> {
