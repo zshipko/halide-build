@@ -114,6 +114,56 @@ impl<'a> Build<'a> {
         }
     }
 
+    pub fn source_file(mut self, src: impl AsRef<std::path::Path>) -> Self {
+        self.src.push(src.as_ref().to_owned());
+        self
+    }
+
+    pub fn build_arg(mut self, src: &'a str) -> Self {
+        self.build_args.push(src.as_ref());
+        self
+    }
+
+    pub fn build_args(mut self, src: impl AsRef<[&'a str]>) -> Self {
+        self.build_args.extend(src.as_ref());
+        self
+    }
+
+    pub fn run_arg(mut self, src: &'a str) -> Self {
+        self.run_args.push(src.as_ref());
+        self
+    }
+
+    pub fn run_args(mut self, src: impl AsRef<[&'a str]>) -> Self {
+        self.run_args.extend(src.as_ref());
+        self
+    }
+
+    pub fn ldflags(mut self, flags: &'a str) -> Self {
+        self.ldflags = Some(flags);
+        self
+    }
+
+    pub fn cxxflags(mut self, flags: &'a str) -> Self {
+        self.cxxflags = Some(flags);
+        self
+    }
+
+    pub fn compiler(mut self, name: &'a str) -> Self {
+        self.cxx = Some(name);
+        self
+    }
+
+    pub fn keep(mut self, x: bool) -> Self {
+        self.keep = x;
+        self
+    }
+
+    pub fn generator(mut self, x: bool) -> Self {
+        self.generator = x;
+        self
+    }
+
     /// Execute the build step
     pub fn build(&self) -> io::Result<bool> {
         let cxx_default = env::var("CXX").unwrap_or("c++".to_string());
@@ -136,8 +186,9 @@ impl<'a> Build<'a> {
                     .to_string_lossy()
                     .as_ref(),
             );
-            cmd.args(&self.build_args);
         }
+
+        cmd.args(&self.build_args);
 
         let tinfo = std::env::var("TERMINFO").unwrap_or_else(|_| "-lncurses".to_string());
 
@@ -180,30 +231,6 @@ impl<'a> Build<'a> {
 
         res
     }
-}
-
-/// Build and run a Halide kernel
-pub fn run<P: AsRef<std::path::Path>, Q: AsRef<std::path::Path>>(
-    halide_path: P,
-    path: Q,
-    run_args: Vec<&str>,
-    generator: bool,
-) -> io::Result<bool> {
-    let build = Build {
-        halide_path: halide_path.as_ref().to_path_buf(),
-        src: vec![path.as_ref().to_path_buf()],
-        output: path.as_ref().to_path_buf().with_extension("exe"),
-        cxx: None,
-        cxxflags: None,
-        ldflags: None,
-        keep: false,
-        generator,
-        run_args,
-        build_args: vec![],
-    };
-
-    build.build()?;
-    build.run()
 }
 
 /// Source is used to maintain the Halide source directory
