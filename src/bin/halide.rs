@@ -1,6 +1,6 @@
 use halide_build::*;
 
-use clap::{App, Arg, SubCommand};
+use clap::{App, Arg};
 
 use std::env;
 use std::io::Write;
@@ -33,169 +33,167 @@ fn relative_to_home<P: AsRef<Path>>(path: P) -> PathBuf {
     home.join(path.as_ref())
 }
 
-fn src_command<'a, 'b>() -> App<'a, 'b> {
-    SubCommand::with_name("src")
+fn src_command<'a>() -> App<'a> {
+    App::new("src")
         .about("Download, build and update halide source")
         .arg(
             Arg::with_name("make")
-                .short("m")
+                .short('m')
                 .long("make")
                 .default_value("make")
-                .help("Make executable"),
+                .about("Make executable"),
         )
         .arg(
             Arg::with_name("source")
                 .long("url")
                 .default_value("https://github.com/halide/halide")
-                .help("Halide respository"),
+                .about("Halide respository"),
         )
         .arg(
             Arg::with_name("branch")
                 .long("branch")
                 .default_value("master")
-                .help("Halide source branch"),
+                .about("Halide source branch"),
         )
 }
 
-fn build_command<'a, 'b>() -> App<'a, 'b> {
-    SubCommand::with_name("build")
+fn build_command<'a>() -> App<'a> {
+    App::new("build")
         .about("Build Halide source files")
         .arg(
             Arg::with_name("cxx")
                 .long("cxx")
                 .env("CXX")
                 .default_value("c++")
-                .help("Set c++ compiler"),
+                .about("Set c++ compiler"),
         )
         .arg(
             Arg::with_name("cxxflags")
                 .env("CXXFLAGS")
                 .long("cxxflags")
-                .help("Set c++ compile flags"),
+                .about("Set c++ compile flags"),
         )
         .arg(
             Arg::with_name("ldflags")
                 .env("LDFLAGS")
                 .long("ldflags")
-                .help("Set c++ link flags"),
+                .about("Set c++ link flags"),
         )
         .arg(
             Arg::with_name("name")
                 .required(true)
-                .help("Output executable name"),
+                .about("Output executable name"),
         )
         .arg(
             Arg::with_name("input")
                 .multiple(true)
                 .required(true)
-                .help("Input files"),
+                .about("Input files"),
         )
         .arg(
             Arg::with_name("args")
                 .multiple(true)
                 .raw(true)
                 .takes_value(true)
-                .help("Arguments to executable"),
+                .about("Arguments to executable"),
         )
         .arg(
             Arg::with_name("generator")
                 .long("generator")
-                .short("g")
-                .help("Link with GenGen.cpp"),
+                .short('g')
+                .about("Link with GenGen.cpp"),
         )
         .arg(
             Arg::with_name("shared")
                 .long("shared")
                 .takes_value(true)
-                .help("Compile shared library"),
+                .about("Compile shared library"),
         )
 }
 
-fn run_command<'a, 'b>() -> App<'a, 'b> {
-    SubCommand::with_name("run")
+fn run_command<'a>() -> App<'a> {
+    App::new("run")
         .about("Build and run Halide source files")
         .arg(
             Arg::with_name("cxx")
                 .long("cxx")
                 .env("CXX")
                 .default_value("c++")
-                .help("Set c++ compiler"),
+                .about("Set c++ compiler"),
         )
         .arg(
             Arg::with_name("cxxflags")
                 .env("CXXFLAGS")
                 .long("cxxflags")
-                .help("Set c++ compile flags"),
+                .about("Set c++ compile flags"),
         )
         .arg(
             Arg::with_name("ldflags")
                 .env("LDFLAGS")
                 .long("ldflags")
-                .help("Set c++ link flags"),
+                .about("Set c++ link flags"),
         )
         .arg(
             Arg::with_name("keep")
                 .long("keep")
-                .short("k")
-                .help("Keep generated executables"),
+                .short('k')
+                .about("Keep generated executables"),
         )
         .arg(
             Arg::with_name("generator")
                 .long("generator")
-                .short("g")
-                .help("Link with GenGen.cpp"),
+                .short('g')
+                .about("Link with GenGen.cpp"),
         )
         .arg(
             Arg::with_name("input")
                 .multiple(true)
                 .required(true)
-                .help("Input files"),
+                .about("Input files"),
         )
         .arg(
             Arg::with_name("args")
                 .multiple(true)
                 .raw(true)
                 .takes_value(true)
-                .help("Arguments to executable"),
+                .about("Arguments to executable"),
         )
         .arg(
             Arg::with_name("shared")
                 .long("shared")
                 .takes_value(true)
-                .help("Compile shared library"),
+                .about("Compile shared library"),
         )
 }
 
-fn new_command<'a, 'b>() -> App<'a, 'b> {
-    SubCommand::with_name("new")
+fn new_command<'a>() -> App<'a> {
+    App::new("new")
         .about("Create new Halide genertor")
         .arg(Arg::with_name("path").required(true))
 }
 
 fn main() {
     let default_halide_path = relative_to_home("halide");
-    let mut app = App::new("halide")
+    let app = App::new("halide")
         .version("0.1")
         .author("Zach Shipko <zachshipko@gmail.com>")
         .arg(
             Arg::with_name("quiet")
-                .short("q")
-                .help("Disable logging to stdout/stderr"),
+                .short('q')
+                .about("Disable logging to stdout/stderr"),
         )
         .arg(
             Arg::with_name("halide-path")
-                .short("p")
+                .short('p')
                 .env("HALIDE_PATH")
                 .default_value(default_halide_path.to_str().expect("Invalid path"))
-                .help("Path to Halide directory"),
+                .about("Path to Halide directory"),
         )
         .subcommand(src_command())
         .subcommand(build_command())
         .subcommand(run_command())
         .subcommand(new_command());
 
-    let mut help = Vec::new();
-    let _ = app.write_long_help(&mut help);
     let matches = app.get_matches();
 
     unsafe {
@@ -379,6 +377,9 @@ HALIDE_REGISTER_GENERATOR(Filter, filter);";
             log!("Unable to write new file: {:?}", e);
         }
     } else {
-        eprintln!("{}", String::from_utf8_lossy(help.as_ref()));
+        eprintln!(
+            "Invalid subcommand: {}",
+            matches.subcommand_name().unwrap_or("NONE")
+        );
     }
 }

@@ -1,6 +1,6 @@
 [package]
 name = "halide-build"
-version = "0.3.5"
+version = "0.4.0"
 authors = ["Zach Shipko <zachshipko@gmail.com>"]
 edition = "2018"
 license = "ISC"
@@ -17,7 +17,7 @@ name = "halide"
 required-features = ["bin"]
 
 [dependencies]
-clap = {version = "2", optional = true}
+clap = {version = "3.0.0-beta.1", optional = true}
 
 [features]
 default = []
