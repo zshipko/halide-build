@@ -37,20 +37,20 @@ fn src_command<'a>() -> App<'a> {
     App::new("src")
         .about("Download, build and update halide source")
         .arg(
-            Arg::with_name("make")
+            Arg::new("make")
                 .short('m')
                 .long("make")
                 .default_value("make")
                 .about("Make executable"),
         )
         .arg(
-            Arg::with_name("source")
+            Arg::new("source")
                 .long("url")
                 .default_value("https://github.com/halide/halide")
                 .about("Halide respository"),
         )
         .arg(
-            Arg::with_name("branch")
+            Arg::new("branch")
                 .long("branch")
                 .default_value("master")
                 .about("Halide source branch"),
@@ -61,50 +61,50 @@ fn build_command<'a>() -> App<'a> {
     App::new("build")
         .about("Build Halide source files")
         .arg(
-            Arg::with_name("cxx")
+            Arg::new("cxx")
                 .long("cxx")
                 .env("CXX")
                 .default_value("c++")
                 .about("Set c++ compiler"),
         )
         .arg(
-            Arg::with_name("cxxflags")
+            Arg::new("cxxflags")
                 .env("CXXFLAGS")
                 .long("cxxflags")
                 .about("Set c++ compile flags"),
         )
         .arg(
-            Arg::with_name("ldflags")
+            Arg::new("ldflags")
                 .env("LDFLAGS")
                 .long("ldflags")
                 .about("Set c++ link flags"),
         )
         .arg(
-            Arg::with_name("name")
+            Arg::new("name")
                 .required(true)
                 .about("Output executable name"),
         )
         .arg(
-            Arg::with_name("input")
+            Arg::new("input")
                 .multiple(true)
                 .required(true)
                 .about("Input files"),
         )
         .arg(
-            Arg::with_name("args")
+            Arg::new("args")
                 .multiple(true)
                 .raw(true)
                 .takes_value(true)
                 .about("Arguments to executable"),
         )
         .arg(
-            Arg::with_name("generator")
+            Arg::new("generator")
                 .long("generator")
                 .short('g')
                 .about("Link with GenGen.cpp"),
         )
         .arg(
-            Arg::with_name("shared")
+            Arg::new("shared")
                 .long("shared")
                 .takes_value(true)
                 .about("Compile shared library"),
@@ -115,51 +115,51 @@ fn run_command<'a>() -> App<'a> {
     App::new("run")
         .about("Build and run Halide source files")
         .arg(
-            Arg::with_name("cxx")
+            Arg::new("cxx")
                 .long("cxx")
                 .env("CXX")
                 .default_value("c++")
                 .about("Set c++ compiler"),
         )
         .arg(
-            Arg::with_name("cxxflags")
+            Arg::new("cxxflags")
                 .env("CXXFLAGS")
                 .long("cxxflags")
                 .about("Set c++ compile flags"),
         )
         .arg(
-            Arg::with_name("ldflags")
+            Arg::new("ldflags")
                 .env("LDFLAGS")
                 .long("ldflags")
                 .about("Set c++ link flags"),
         )
         .arg(
-            Arg::with_name("keep")
+            Arg::new("keep")
                 .long("keep")
                 .short('k')
                 .about("Keep generated executables"),
         )
         .arg(
-            Arg::with_name("generator")
+            Arg::new("generator")
                 .long("generator")
                 .short('g')
                 .about("Link with GenGen.cpp"),
         )
         .arg(
-            Arg::with_name("input")
+            Arg::new("input")
                 .multiple(true)
                 .required(true)
                 .about("Input files"),
         )
         .arg(
-            Arg::with_name("args")
+            Arg::new("args")
                 .multiple(true)
                 .raw(true)
                 .takes_value(true)
                 .about("Arguments to executable"),
         )
         .arg(
-            Arg::with_name("shared")
+            Arg::new("shared")
                 .long("shared")
                 .takes_value(true)
                 .about("Compile shared library"),
@@ -169,7 +169,7 @@ fn run_command<'a>() -> App<'a> {
 fn new_command<'a>() -> App<'a> {
     App::new("new")
         .about("Create new Halide genertor")
-        .arg(Arg::with_name("path").required(true))
+        .arg(Arg::new("path").required(true))
 }
 
 fn main() {
@@ -178,12 +178,12 @@ fn main() {
         .version("0.1")
         .author("Zach Shipko <zachshipko@gmail.com>")
         .arg(
-            Arg::with_name("quiet")
+            Arg::new("quiet")
                 .short('q')
                 .about("Disable logging to stdout/stderr"),
         )
         .arg(
-            Arg::with_name("halide-path")
+            Arg::new("halide-path")
                 .short('p')
                 .env("HALIDE_PATH")
                 .default_value(default_halide_path.to_str().expect("Invalid path"))
