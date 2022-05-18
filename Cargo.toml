@@ -1,8 +1,8 @@
 [package]
 name = "halide-build"
-version = "0.4.1"
+version = "0.5.0"
 authors = ["Zach Shipko <zachshipko@gmail.com>"]
-edition = "2018"
+edition = "2021"
 license = "ISC"
 repository = "https://github.com/zshipko/halide-build"
 documentation = "https://docs.rs/halide-build"
