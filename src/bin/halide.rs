@@ -1,6 +1,6 @@
 use halide_build::*;
 
-use clap::{App, Arg};
+use clap::{Arg, Command};
 
 use std::env;
 use std::io::Write;
@@ -33,161 +33,161 @@ fn relative_to_home<P: AsRef<Path>>(path: P) -> PathBuf {
     home.join(path.as_ref())
 }
 
-fn src_command<'a>() -> App<'a> {
-    App::new("src")
+fn src_command<'a>() -> Command<'a> {
+    Command::new("src")
         .about("Download, build and update halide source")
         .arg(
             Arg::new("make")
                 .short('m')
                 .long("make")
                 .default_value("make")
-                .about("Make executable"),
+                .help("Make executable"),
         )
         .arg(
             Arg::new("source")
                 .long("url")
                 .default_value("https://github.com/halide/halide")
-                .about("Halide respository"),
+                .help("Halide respository"),
         )
         .arg(
             Arg::new("branch")
                 .long("branch")
                 .default_value("master")
-                .about("Halide source branch"),
+                .help("Halide source branch"),
         )
 }
 
-fn build_command<'a>() -> App<'a> {
-    App::new("build")
+fn build_command<'a>() -> Command<'a> {
+    Command::new("build")
         .about("Build Halide source files")
         .arg(
             Arg::new("cxx")
                 .long("cxx")
                 .env("CXX")
                 .default_value("c++")
-                .about("Set c++ compiler"),
+                .help("Set c++ compiler"),
         )
         .arg(
             Arg::new("cxxflags")
                 .env("CXXFLAGS")
                 .long("cxxflags")
-                .about("Set c++ compile flags"),
+                .help("Set c++ compile flags"),
         )
         .arg(
             Arg::new("ldflags")
                 .env("LDFLAGS")
                 .long("ldflags")
-                .about("Set c++ link flags"),
+                .help("Set c++ link flags"),
         )
         .arg(
             Arg::new("name")
                 .required(true)
-                .about("Output executable name"),
+                .help("Output executable name"),
         )
         .arg(
             Arg::new("input")
-                .multiple(true)
+                .multiple_occurrences(true)
                 .required(true)
-                .about("Input files"),
+                .help("Input files"),
         )
         .arg(
             Arg::new("args")
-                .multiple(true)
+                .multiple_occurrences(true)
                 .raw(true)
                 .takes_value(true)
-                .about("Arguments to executable"),
+                .help("Arguments to executable"),
         )
         .arg(
             Arg::new("generator")
                 .long("generator")
                 .short('g')
-                .about("Link with GenGen.cpp"),
+                .help("Link with GenGen.cpp"),
         )
         .arg(
             Arg::new("shared")
                 .long("shared")
                 .takes_value(true)
-                .about("Compile shared library"),
+                .help("Compile shared library"),
         )
 }
 
-fn run_command<'a>() -> App<'a> {
-    App::new("run")
+fn run_command<'a>() -> Command<'a> {
+    Command::new("run")
         .about("Build and run Halide source files")
         .arg(
             Arg::new("cxx")
                 .long("cxx")
                 .env("CXX")
                 .default_value("c++")
-                .about("Set c++ compiler"),
+                .help("Set c++ compiler"),
         )
         .arg(
             Arg::new("cxxflags")
                 .env("CXXFLAGS")
                 .long("cxxflags")
-                .about("Set c++ compile flags"),
+                .help("Set c++ compile flags"),
         )
         .arg(
             Arg::new("ldflags")
                 .env("LDFLAGS")
                 .long("ldflags")
-                .about("Set c++ link flags"),
+                .help("Set c++ link flags"),
         )
         .arg(
             Arg::new("keep")
                 .long("keep")
                 .short('k')
-                .about("Keep generated executables"),
+                .help("Keep generated executables"),
         )
         .arg(
             Arg::new("generator")
                 .long("generator")
                 .short('g')
-                .about("Link with GenGen.cpp"),
+                .help("Link with GenGen.cpp"),
         )
         .arg(
             Arg::new("input")
-                .multiple(true)
+                .multiple_occurrences(true)
                 .required(true)
-                .about("Input files"),
+                .help("Input files"),
         )
         .arg(
             Arg::new("args")
-                .multiple(true)
+                .multiple_occurrences(true)
                 .raw(true)
                 .takes_value(true)
-                .about("Arguments to executable"),
+                .help("Arguments to executable"),
         )
         .arg(
             Arg::new("shared")
                 .long("shared")
                 .takes_value(true)
-                .about("Compile shared library"),
+                .help("Compile shared library"),
         )
 }
 
-fn new_command<'a>() -> App<'a> {
-    App::new("new")
+fn new_command<'a>() -> Command<'a> {
+    Command::new("new")
         .about("Create new Halide genertor")
         .arg(Arg::new("path").required(true))
 }
 
 fn main() {
     let default_halide_path = relative_to_home("halide");
-    let app = App::new("halide")
+    let app = Command::new("halide")
         .version("0.1")
         .author("Zach Shipko <zachshipko@gmail.com>")
         .arg(
             Arg::new("quiet")
                 .short('q')
-                .about("Disable logging to stdout/stderr"),
+                .help("Disable logging to stdout/stderr"),
         )
         .arg(
             Arg::new("halide-path")
                 .short('p')
                 .env("HALIDE_PATH")
                 .default_value(default_halide_path.to_str().expect("Invalid path"))
-                .about("Path to Halide directory"),
+                .help("Path to Halide directory"),
         )
         .subcommand(src_command())
         .subcommand(build_command())
