@@ -6,8 +6,8 @@ use std::io;
 use std::path::PathBuf;
 use std::process::Command;
 
-static CARGO_LINK_SEARCH: &'static str = "cargo:rustc-link-search=native=";
-static CARGO_LINK_LIB: &'static str = "cargo:rustc-link-lib=";
+static CARGO_LINK_SEARCH: &str = "cargo:rustc-link-search=native=";
+static CARGO_LINK_LIB: &str = "cargo:rustc-link-lib=";
 
 /// Link a library, specified by path and name
 pub fn link_lib(path: Option<&str>, name: &str) {
@@ -25,7 +25,7 @@ pub fn link<P: AsRef<std::path::Path>>(filename: P) {
     let s = String::from(name.to_str().expect("Invalid filename"));
     let mut tmp: &str = &s;
 
-    if s.starts_with("lib") {
+    if let Some(s) = s.strip_prefix("lib") {
         tmp = &s[3..]
     }
 
@@ -47,10 +47,10 @@ pub fn compile_shared_library(
     output: &str,
     args: &[&str],
 ) -> Result<bool, std::io::Error> {
-    let cxx = std::env::var("CXX").unwrap_or("c++".to_owned());
+    let cxx = std::env::var("CXX").unwrap_or_else(|_| "c++".to_owned());
     let mut cmd = Command::new(compiler.unwrap_or(&cxx));
 
-    cmd.arg("-std=c++11");
+    cmd.arg("-std=c++17");
     let res = cmd
         .arg("-shared")
         .arg("-o")
@@ -166,15 +166,15 @@ impl<'a> Build<'a> {
 
     /// Execute the build step
     pub fn build(&self) -> io::Result<bool> {
-        let cxx_default = env::var("CXX").unwrap_or("c++".to_string());
-        let mut cmd = Command::new(self.cxx.clone().unwrap_or(cxx_default.as_str()));
+        let cxx_default = env::var("CXX").unwrap_or_else(|_| "c++".to_string());
+        let mut cmd = Command::new(self.cxx.unwrap_or(cxx_default.as_str()));
 
-        cmd.arg("-std=c++11");
+        cmd.arg("-std=c++17");
         cmd.args(&["-I", &self.halide_path.join("include").to_string_lossy()])
             .args(&["-I", &self.halide_path.join("tools").to_string_lossy()]);
 
         if let Some(flags) = &self.cxxflags {
-            cmd.args(flags.split(" "));
+            cmd.args(flags.split(' '));
         }
 
         if self.generator {
@@ -207,7 +207,7 @@ impl<'a> Build<'a> {
             ]);
 
         if let Some(flags) = &self.ldflags {
-            cmd.args(flags.split(" "));
+            cmd.args(flags.split(' '));
         }
 
         cmd.status().map(|status| status.success())
