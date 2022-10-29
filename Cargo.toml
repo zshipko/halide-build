@@ -20,5 +20,5 @@ required-features = ["bin"]
 clap = {version = "3", optional = true, features=["env"]}
 
 [features]
-default = []
+default = ["bin"]
 bin = ["clap"]

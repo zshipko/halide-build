@@ -174,8 +174,8 @@ fn new_command<'a>() -> Command<'a> {
 
 fn main() {
     let default_halide_path = relative_to_home("halide");
-    let app = Command::new("halide")
-        .version("0.1")
+    let mut app = Command::new("halide")
+        .version("0.6")
         .author("Zach Shipko <zachshipko@gmail.com>")
         .arg(
             Arg::new("quiet")
@@ -194,7 +194,7 @@ fn main() {
         .subcommand(run_command())
         .subcommand(new_command());
 
-    let matches = app.get_matches();
+    let matches = app.clone().get_matches();
 
     unsafe {
         QUIET = matches.is_present("quiet");
@@ -377,9 +377,6 @@ HALIDE_REGISTER_GENERATOR(Filter, filter);";
             log!("Unable to write new file: {:?}", e);
         }
     } else {
-        eprintln!(
-            "Invalid subcommand: {}",
-            matches.subcommand_name().unwrap_or("NONE")
-        );
+        app.print_long_help().unwrap();
     }
 }
