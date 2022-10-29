@@ -52,7 +52,7 @@ fn src_command<'a>() -> Command<'a> {
         .arg(
             Arg::new("branch")
                 .long("branch")
-                .default_value("master")
+                .default_value("main")
                 .help("Halide source branch"),
         )
 }
